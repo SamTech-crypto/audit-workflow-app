@@ -1,0 +1,7 @@
+streamlit
+pandas
+openpyxl
+networkx
+matplotlib
+graphviz
+faker
