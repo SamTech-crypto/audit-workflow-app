@@ -66,7 +66,7 @@ if LOGGED_IN:
             self.faker = Faker()
 
         def validate_email(self, email):
-            pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            pattern = r'^[a-zA-Z0-9._%+-]+@[a-zAZ0-9.-]+\.[a-zA-Z]{2,}$'
             return re.match(pattern, email) is not None
 
         def add_task(self, task_id, description, due_date, dependencies, assignee_email):
@@ -166,6 +166,46 @@ if LOGGED_IN:
             return output
 
         def visualize_workflow(self):
-           
-::contentReference[oaicite:4]{index=4}
- 
+            if not self.task_graph.nodes:
+                st.warning("No tasks to visualize.")
+                return None
+            dot = Digraph(comment='Audit Workflow')
+            for node in self.task_graph.nodes():
+                dot.node(node, self.task_graph.nodes[node]['label'])
+            for edge in self.task_graph.edges():
+                dot.edge(edge[0], edge[1])
+            return dot
+
+    # Initialize AuditWorkflow instance
+    audit_workflow = AuditWorkflow()
+
+    # Adding tasks and generating reports, etc.
+    # You can call methods here as per your app functionality needs.
+
+    # Example to generate fake tasks and display them
+    if st.button("Generate Fake Tasks"):
+        if audit_workflow.generate_fake_tasks():
+            st.success("Fake tasks generated!")
+        else:
+            st.error("Failed to generate tasks.")
+
+    # Display the workflow graph
+    if st.button("Visualize Workflow"):
+        dot = audit_workflow.visualize_workflow()
+        if dot:
+            st.graphviz_chart(dot.source)
+
+    # Generate report as an Excel file
+    if st.button("Generate Audit Report"):
+        report = audit_workflow.generate_report()
+        if report:
+            st.download_button(
+                label="Download Report",
+                data=report,
+                file_name="audit_report.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+    # Send reminders
+    for task in audit_workflow.tasks:
+        audit_workflow.send_reminder(task)
