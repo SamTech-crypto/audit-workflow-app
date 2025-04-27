@@ -142,6 +142,37 @@ class AuditWorkflow:
 
 # Streamlit Interface
 def main():
+    # Background Customization Options:
+    
+    # Option 1: Background Color
+    # st.markdown("""
+    #     <style>
+    #         body {
+    #             background-color: #f0f8ff;  /* Light blue background */
+    #         }
+    #     </style>
+    # """, unsafe_allow_html=True)
+
+    # Option 2: Background Image
+    # st.markdown("""
+    #     <style>
+    #         body {
+    #             background-image: url('https://your-image-url.com/image.jpg');  /* Your image URL */
+    #             background-size: cover;
+    #             background-position: center;
+    #         }
+    #     </style>
+    # """, unsafe_allow_html=True)
+    
+    # Option 3: Gradient Background
+    st.markdown("""
+        <style>
+            body {
+                background: linear-gradient(45deg, #ff6b6b, #f7b7b7);  /* Custom gradient */
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
     st.title("Audit Workflow Automation System")
     if 'workflow' not in st.session_state:
         st.session_state.workflow = AuditWorkflow()
@@ -192,3 +223,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
