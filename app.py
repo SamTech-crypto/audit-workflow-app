@@ -19,7 +19,7 @@ EMAIL_CONFIG = {
     'smtp_server': 'smtp.gmail.com',
     'smtp_port': 587,
     'sender_email': 'auditflow5@gmail.com',
-    'sender_password': st.secrets.get('EMAIL_PASSWORD', '')
+    'sender_password': st.secrets.get('EMAIL_PASSWORD', '')  # Ensure you have this in secrets.toml
 }
 
 # --- Custom Background + Button Style ---
@@ -63,15 +63,22 @@ class AuditWorkflow:
     def validate_email(self, email):
         return re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email)
 
+    def validate_due_date(self, due_date):
+        try:
+            due_date_obj = datetime.datetime.strptime(due_date, '%Y-%m-%d')
+            if due_date_obj < datetime.datetime.now():
+                raise ValueError("Due date cannot be in the past")
+            return due_date_obj
+        except ValueError:
+            raise ValueError("Invalid date format. Please use YYYY-MM-DD.")
+
     def add_task(self, task_id, description, due_date, dependencies, assignee_email):
         try:
             if not task_id or task_id in [t['id'] for t in self.tasks]:
                 raise ValueError("Task ID must be unique and non-empty")
             if not self.validate_email(assignee_email):
                 raise ValueError("Invalid email format")
-            due_date_obj = datetime.datetime.strptime(due_date, '%Y-%m-%d')
-            if due_date_obj < datetime.datetime.now():
-                raise ValueError("Due date cannot be in the past")
+            due_date_obj = self.validate_due_date(due_date)
             task = {
                 'id': task_id,
                 'description': description,
